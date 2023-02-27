@@ -32,7 +32,7 @@ class User(APIView):
         return Response({"message":"user is not Autorize"}, status=HTTP_401_UNAUTHORIZED)
     
 
-    def register_user(self, email, password, username, phone_number, type, medical_system_number=None, doctors=[]):
+    def register_user(self, email, password, username, phone_number, type, medical_system_number="", doctors=[]):
         self.email = email
         self.password = password
         self.username = username
@@ -198,6 +198,7 @@ class AsthmaData(APIView):
                 response.append({
                     "date":item["_source"]["data"], 
                     "have_medicine":item["_source"]["have_medicine"], 
+                    "medicine":item["_source"]["medicine"], 
                     "percent":item["_source"]["percent"]
                 })
             return Response(response)
@@ -211,6 +212,7 @@ class AsthmaData(APIView):
                 "percent":float(data["percent"]), 
                 "date":datetime.now().isoformat(), 
                 "have_medicine": data["have_medicine"], 
+                "medicine": data["medicine"], 
                 "user_id":data["user_id"] 
             }
             es.index(index="asthma_data", document=result)
