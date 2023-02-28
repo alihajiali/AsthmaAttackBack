@@ -3,6 +3,7 @@ from uuid import uuid4
 from env import *
 import requests
 import hashlib
+import json
 import jwt
 
 
@@ -14,8 +15,21 @@ def hash_saz(matn):
 
 
 def send_sms(phone_number, text):
-    response = requests.post(SMS_IR_URL, headers={"X-API-KEY":API_KEYS_SMS_IR}, 
-    json={"lineNumber": PHONE_NUMBER, "messageText": text, "mobiles": [phone_number], "sendDateTime": None})
+    reqUrl = "https://api.sms.ir/v1/send/bulk"
+    headersList = {
+        "X-API-KEY": "ofoWKIvPSd5zgMSFPw8wy2ZexcNteutALn3yka595N3vSRAIF1JhaMNzU5UnPrfI",
+        "Content-Type": "application/json" 
+    }
+    payload = json.dumps({
+        "lineNumber": 30007732006181,
+        "messageText": text,
+        "mobiles": [
+            phone_number
+        ],
+        "sendDateTime": None
+    })
+    response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
+    print(response.text)
     return response.status_code
 
 
@@ -24,7 +38,7 @@ def send_sms(phone_number, text):
 def generate_code(username):
     if redis_cli.exists(username) == 0:
         code = str(uuid4().int)[:5]
-        redis_cli.set(username, code, ex=120)
+        redis_cli.set(username, code, ex=86400)
         return code
     return False
 

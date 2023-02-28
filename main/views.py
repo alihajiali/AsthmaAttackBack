@@ -191,7 +191,7 @@ class AsthmaData(APIView):
         if Auth(jwt_checker(request.headers["Authorization"].split(" ")[1])):
             user_id = request.GET["user_id"]
             query = {"match":{"user_id.keyword":user_id}}
-            count = es.count(index="asthma_data", query=query)["count"]
+            count = es.count(index="asthma_data", query={"query":query})["count"]
             data = es.search(index="asthma_data", query=query, size=count)["hits"]["hits"]
             response = []
             for item in data:
