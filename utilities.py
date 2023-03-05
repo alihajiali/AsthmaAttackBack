@@ -56,7 +56,7 @@ def jwt_generator(username):
     return token
 
 def jwt_checker(token):
-    data = jwt.decode(token.encode(), DJANGO_SECRET_KEY, algorithms=["HS256"])
+    data = jwt.decode(token, DJANGO_SECRET_KEY, algorithms=["HS256"])
     return data
 
 
