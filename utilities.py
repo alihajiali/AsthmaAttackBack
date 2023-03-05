@@ -38,7 +38,7 @@ def send_sms(phone_number, text):
 def generate_code(username):
     if redis_cli.exists(username) == 0:
         code = str(uuid4().int)[:5]
-        redis_cli.set(username, code, ex=86400)
+        redis_cli.set(username, code, ex=120)
         return code
     return False
 
@@ -51,7 +51,7 @@ def check_code(username, code):
 
 
 def jwt_generator(username):
-    expire = (datetime.now() + timedelta(minutes=1)).isoformat()
+    expire = (datetime.now() + timedelta(days=30)).isoformat()
     token = jwt.encode({"username":username, "expire":expire}, DJANGO_SECRET_KEY, algorithm="HS256")
     return token
 

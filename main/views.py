@@ -114,13 +114,13 @@ class UpdateUser(APIView):
         if check_code(data["username"], data["code"]):
             user_data = {}
             if "new_username" in data:
-                user_data[0]["username"] = data["new_username"]
+                user_data[0]["_source"]["username"] = data["new_username"]
             if "new_phone_number" in data:
-                user_data[0]["phone_number"] = data["new_phone_number"]
+                user_data[0]["_source"]["phone_number"] = data["new_phone_number"]
             if "new_email" in data:
-                user_data[0]["email"] = data["email"]
+                user_data[0]["_source"]["email"] = data["new_email"]
             if "new_password" in data:
-                user_data[0]["password"] = hash_saz(data["new_password"])
+                user_data[0]["_source"]["password"] = hash_saz(data["new_password"])
             es.update(index="user_2", id=user_data[0]["_id"], doc=user_data[0])
             return Response({"message":"user updated"}, status=HTTP_200_OK)
         return Response({"message":"code is wrong"}, status=HTTP_400_BAD_REQUEST)
@@ -191,12 +191,12 @@ class AsthmaData(APIView):
         if Auth(jwt_checker(request.headers["Authorization"].split(" ")[1])):
             user_id = request.GET["user_id"]
             query = {"match":{"user_id.keyword":user_id}}
-            count = es.count(index="asthma_data", query={"query":query})["count"]
+            count = es.count(index="asthma_data", body={"query":query})["count"]
             data = es.search(index="asthma_data", query=query, size=count)["hits"]["hits"]
             response = []
             for item in data:
                 response.append({
-                    "date":item["_source"]["data"], 
+                    "date":item["_source"]["date"], 
                     "have_medicine":item["_source"]["have_medicine"], 
                     "medicine":item["_source"]["medicine"], 
                     "percent":item["_source"]["percent"]
