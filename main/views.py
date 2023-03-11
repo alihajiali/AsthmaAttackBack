@@ -197,11 +197,18 @@ class AsthmaData(APIView):
             count = es.count(index="asthma_data", body={"query":query})["count"]
             data = es.search(index="asthma_data", query=query, size=count)["hits"]["hits"]
             response = []
-            for item in data:
-                response.append({
-                    "date":item["_source"]["date"], 
-                    "pick_flow":item["_source"]["percent"]
-                })
+            if "medicine" not in request.GET :
+                for item in data:
+                    response.append({
+                        "date":item["_source"]["date"], 
+                        "pick_flow":item["_source"]["percent"]
+                    })
+            else:
+                for item in data:
+                    response.append({
+                        "date":item["_source"]["date"], 
+                        "medicine":item["_source"]["medicine"]
+                    })
             return Response({"response":response})
         return Response({"message":"user is not Autorize"}, status=HTTP_401_UNAUTHORIZED)
 
