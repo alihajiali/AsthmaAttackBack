@@ -199,8 +199,8 @@ class AsthmaData(APIView):
             response = []
             for item in data:
                 response.append({
-                    "x":item["_source"]["date"], 
-                    "y":item["_source"]["percent"]
+                    "date":item["_source"]["date"], 
+                    "pick_flow":item["_source"]["percent"]
                 })
             return Response([{"id":data[0]["_source"]["user_id"], "data":response}])
         return Response({"message":"user is not Autorize"}, status=HTTP_401_UNAUTHORIZED)
