@@ -169,7 +169,7 @@ class Login(APIView):
         if user_data:
             if user_data[0]["_source"]["password"] == hash_saz(data["password"]):
                 access = jwt_generator(data["username"])
-                return Response({"access":access}, status=HTTP_200_OK)
+                return Response({"access":access, "user_id":user_data[0]["_id"]}, status=HTTP_200_OK)
             return Response({"message":"password is wrong"}, status=HTTP_401_UNAUTHORIZED)
         return Response({"message":"user is not exists"}, status=HTTP_401_UNAUTHORIZED)
 
@@ -190,18 +190,16 @@ class AsthmaData(APIView):
     def get(self, request):
         if Auth(jwt_checker(request.headers["Authorization"].split(" ")[1])):
             user_id = request.GET["user_id"]
-            query = {"match":{"user_id.keyword":user_id}}
+            query = {"bool":{"must":[{"match":{"user_id.keyword":user_id}}]}}
             count = es.count(index="asthma_data", body={"query":query})["count"]
             data = es.search(index="asthma_data", query=query, size=count)["hits"]["hits"]
             response = []
             for item in data:
                 response.append({
-                    "date":item["_source"]["date"], 
-                    "have_medicine":item["_source"]["have_medicine"], 
-                    "medicine":item["_source"]["medicine"], 
-                    "percent":item["_source"]["percent"]
+                    "x":item["_source"]["date"], 
+                    "y":item["_source"]["percent"]
                 })
-            return Response(response)
+            return Response([{"id":data[0]["_source"]["user_id"], "data":response}])
         return Response({"message":"user is not Autorize"}, status=HTTP_401_UNAUTHORIZED)
 
 
