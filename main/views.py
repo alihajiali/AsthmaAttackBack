@@ -35,41 +35,43 @@ class User(APIView):
         return Response({"message":"user is not Autorize"}, status=HTTP_401_UNAUTHORIZED)
     
 
-    def register_user(self, email, password, username, phone_number, type, medical_system_number="", doctors=[]):
+    def register_user(self, email, password, full_name, username, phone_number, type, medical_system_number="", doctors=[]):
         self.email = email
         self.password = password
         self.username = username
+        self.full_name = full_name
         self.phone_number = phone_number
         self.type = type   #  [doctor , bimar]
         self.medical_system_number = medical_system_number
         self.doctors = doctors
-        if es.count(index="user_2", body={"query":{"match":{"username.keyword":self.username}}})["count"] == 0:
-            if es.count(index="user_2", body={"query":{"match":{"email.keyword":self.email}}})["count"] == 0:
-                if es.count(index="user_2", body={"query":{"match":{"phone_number.keyword":self.phone_number}}})["count"] == 0:
-                    if self.username not in ["admin", "user", "modir"]:
-                        if "@gmail.com" in self.email:
-                            if self.phone_number[:2] == "09" and self.phone_number[2:].isdigit() and len(self.phone_number) == 11:
-                                if len(self.password) >= 8:
-                                    self.data = {
-                                        "email":self.email, 
-                                        "password":hash_saz(self.password), 
-                                        "username":self.username, 
-                                        "phone_number": self.phone_number, 
-                                        "type": self.type, 
-                                        "medical_system_number": self.medical_system_number, 
-                                        "doctors": self.doctors, 
-                                        "other_data":"", 
-                                        "status":"inactive"
-                                    }
-                                    es.index(index="user_2", document=self.data)
-                                    return ({"message":"registered"}, HTTP_201_CREATED)
-                                return ({"message":"password does not valid"}, HTTP_406_NOT_ACCEPTABLE)
-                            return ({"message":"phone number does not valid"}, HTTP_406_NOT_ACCEPTABLE)
-                        return ({"message":"email does not valid"}, HTTP_406_NOT_ACCEPTABLE)
-                    return ({"message":"username does not valid"}, HTTP_406_NOT_ACCEPTABLE)
-                return ({"message":"phone number is exists"}, HTTP_406_NOT_ACCEPTABLE)
-            return ({"message":"email is exists"}, HTTP_406_NOT_ACCEPTABLE)
-        return ({"message":"username is exists"}, HTTP_406_NOT_ACCEPTABLE)
+        # if es.count(index="user_2", body={"query":{"match":{"username.keyword":self.username}}})["count"] == 0:
+        #     if es.count(index="user_2", body={"query":{"match":{"email.keyword":self.email}}})["count"] == 0:
+        #         if es.count(index="user_2", body={"query":{"match":{"phone_number.keyword":self.phone_number}}})["count"] == 0:
+        #             if self.username not in ["admin", "user", "modir"]:
+        #                 if "@gmail.com" in self.email:
+        #                     if self.phone_number[:2] == "09" and self.phone_number[2:].isdigit() and len(self.phone_number) == 11:
+        #                         if len(self.password) >= 8:
+        self.data = {
+            "email":self.email, 
+            "password":hash_saz(self.password), 
+            "username":self.username, 
+            "full_name":self.full_name, 
+            "phone_number": self.phone_number, 
+            "type": self.type, 
+            "medical_system_number": self.medical_system_number, 
+            "doctors": self.doctors, 
+            "other_data":"", 
+            "status":"inactive"
+        }
+        es.index(index="user_2", document=self.data)
+        return ({"message":"registered"}, HTTP_201_CREATED)
+        #                         return ({"message":"password does not valid"}, HTTP_406_NOT_ACCEPTABLE)
+        #                     return ({"message":"phone number does not valid"}, HTTP_406_NOT_ACCEPTABLE)
+        #                 return ({"message":"email does not valid"}, HTTP_406_NOT_ACCEPTABLE)
+        #             return ({"message":"username does not valid"}, HTTP_406_NOT_ACCEPTABLE)
+        #         return ({"message":"phone number is exists"}, HTTP_406_NOT_ACCEPTABLE)
+        #     return ({"message":"email is exists"}, HTTP_406_NOT_ACCEPTABLE)
+        # return ({"message":"username is exists"}, HTTP_406_NOT_ACCEPTABLE)
 
     def post(self, request):
         data = request.data
@@ -80,7 +82,8 @@ class User(APIView):
         type = data["type"]
         medical_system_number = data["medical_system_number"]
         doctors = data["doctors"]
-        result = self.register_user(email=email, password=password, username=username, phone_number=phone_number, type=type, medical_system_number=medical_system_number, doctors=doctors)
+        full_name = data["full_name"]
+        result = self.register_user(email=email, password=password, full_name=full_name, username=username, phone_number=phone_number, type=type, medical_system_number=medical_system_number, doctors=doctors)
         return Response(result[0], status=result[1])
 
 
