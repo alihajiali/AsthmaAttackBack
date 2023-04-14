@@ -207,7 +207,7 @@ class AsthmaData(APIView):
             if "medicine" not in request.GET :
                 for item in data:
                     response.append({
-                        "date":item["_source"]["date"], 
+                        "date":item["_source"]["date"].replace("T", " "), 
                         "pick_flow":item["_source"]["percent"]
                     })
             else:
