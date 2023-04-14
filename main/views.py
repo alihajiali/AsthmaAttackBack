@@ -1,7 +1,7 @@
 from pydoc import doc
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from jdatetime import datetime, timedelta
+import jdatetime
 from rest_framework.status import *
 from env import *
 from utilities import *
@@ -186,7 +186,7 @@ class Login(APIView):
 
 class AsthmaData(APIView):
     def check(self, user_id, this_percent, days_ago, change_percent):
-        gte_time = datetime.now() - timedelta(days=days_ago)
+        gte_time = jdatetime.datetime.now() - jdatetime.timedelta(days=days_ago)
         data = [item["_source"]["percent"] for item in es.search(index="asthma_data", query={"bool":{"must":[
             {"match":{"user_id.keyword":user_id}}, 
             {"range":{"date":{"gte":gte_time}}}
@@ -225,7 +225,7 @@ class AsthmaData(APIView):
             data = request.data
             result = {
                 "percent":float(data["percent"]), 
-                "date":datetime.now().isoformat(), 
+                "date":jdatetime.datetime.now().isoformat(), 
                 "have_medicine": data["have_medicine"], 
                 "medicine": data["medicine"], 
                 "user_id":data["user_id"] 
