@@ -212,9 +212,8 @@ class AsthmaData(APIView):
                     })
             else:
                 for item in data:
-                    date = jdatetime.datetime.strptime(item["_source"]["date"], "%Y-%m-%dT%H:%M:%S.%f")
                     response.append({
-                        "date":date.replace("T", " "), 
+                        "date":item["_source"]["date"].replace("T", " "), 
                         "medicine":item["_source"]["medicine"]
                     })
             return Response({"response":response})
