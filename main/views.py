@@ -15,7 +15,11 @@ class User(APIView):
         if username is not None:
             query = {"match":{"username":username}}
         if filter_bimar is not None:
-            query = {"match":{"doctors.keyword":filter_bimar}}
+            find_doctor = es.search(index="user_2", query={"match":{"username.keyword":filter_bimar}})["hits"]["hits"]
+            if len(find_doctor):
+                query = {"match":{"doctors.keyword":find_doctor[0]["_source"]["medical_system_number"]}}
+            else : 
+                query = {"match":{"doctors.keyword":"sdjapojporuhf"}}
         user_count = es.count(index="user_2", body={"query":query})["count"]
         users = es.search(index="user_2", query=query, size=user_count)["hits"]["hits"]
         data = []
