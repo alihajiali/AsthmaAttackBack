@@ -65,7 +65,13 @@ class User(APIView):
             "medical_system_number": self.medical_system_number, 
             "doctors": self.doctors, 
             "other_data":"", 
-            "status":"inactive"
+            "status":"inactive", 
+            "medical_record":{
+                "national_code":"", 
+                "age":"", 
+                "sickness":"", 
+                "یoctor_recommendations":"", 
+            }
         }
         es.index(index="user_2", document=self.data)
         return ({"message":"registered"}, HTTP_201_CREATED)
