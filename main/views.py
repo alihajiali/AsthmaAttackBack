@@ -98,6 +98,12 @@ class User(APIView):
         full_name = data["full_name"]
         result = self.register_user(email=email, password=password, full_name=full_name, username=username, phone_number=phone_number, type=type, medical_system_number=medical_system_number, doctors=doctors)
         return Response(result[0], status=result[1])
+    
+    def put(self, request):
+        if Auth(jwt_checker(request.headers["Authorization"].split(" ")[1])):
+            es.update(index="user_2", id=request.GET["id"], doc=request.data)
+            return "ok"
+        return Response({"message":"user is not Autorize"}, status=HTTP_401_UNAUTHORIZED)
 
 
 class ActivePhoneNumver(APIView):
