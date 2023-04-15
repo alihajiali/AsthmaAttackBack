@@ -70,7 +70,7 @@ class User(APIView):
                 "national_code":"", 
                 "age":"", 
                 "sickness":"", 
-                "یoctor_recommendations":"", 
+                "doctor_recommendations":"", 
             }
         }
         es.index(index="user_2", document=self.data)
