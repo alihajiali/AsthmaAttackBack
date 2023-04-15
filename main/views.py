@@ -8,7 +8,7 @@ from utilities import *
 
 # Create your views here.
 class User(APIView):
-    def get_user(self, type, username=None, filter_bimar=None):
+    def get_user(self, type, username=None, filter_bimar=None, id=None):
         query = {"match_all":{}}
         if type != "all":
             query = {"match":{"type.keyword":type}}
@@ -20,6 +20,8 @@ class User(APIView):
                 query = {"match":{"doctors.keyword":find_doctor[0]["_source"]["medical_system_number"]}}
             else : 
                 query = {"match":{"doctors.keyword":"sdjapojporuhf"}}
+        if id is not None:
+            query = {"match":{"_id":id}}
         user_count = es.count(index="user_2", body={"query":query})["count"]
         users = es.search(index="user_2", query=query, size=user_count)["hits"]["hits"]
         data = []
@@ -34,7 +36,8 @@ class User(APIView):
             type = data["type"] if "type" in data else "all"
             username = data["username"] if "username" in data else None
             filter_bimar = data["filter_bimar"] if "filter_bimar" in data else None
-            result = self.get_user(type=type, username=username, filter_bimar=filter_bimar)
+            id = data["id"] if "id" in data else None
+            result = self.get_user(type=type, username=username, filter_bimar=filter_bimar, id=id)
             return Response(result[0], status=result[1])
         return Response({"message":"user is not Autorize"}, status=HTTP_401_UNAUTHORIZED)
     
