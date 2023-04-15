@@ -101,7 +101,7 @@ class User(APIView):
     
     def put(self, request):
         if Auth(jwt_checker(request.headers["Authorization"].split(" ")[1])):
-            es.update(index="user_2", id=request.GET["id"], doc=request.data, refresh="wait_for")
+            es.update(index="user_2", id=request.GET["id"], doc=request.data["_source"], refresh="wait_for")
             return "ok"
         return Response({"message":"user is not Autorize"}, status=HTTP_401_UNAUTHORIZED)
 
